@@ -8,7 +8,7 @@ const Team = connection.define(
       type: DataTypes.STRING,
     },
   },
-  { timestamps: true }
+  { timestamps: false }
 );
 
 module.exports = Team;

@@ -2,8 +2,8 @@ const Lab = require("../models/lab.model");
 
 const getAllLabs = async (request, response) => {
   try {
-    const Labs = await Lab.findAll();
-    return response.status(200).json(Labs);
+    const labs = await Lab.findAll();
+    return response.status(200).json(labs);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -11,8 +11,8 @@ const getAllLabs = async (request, response) => {
 
 const getLab = async (request, response) => {
   try {
-    const Lab = await Lab.findByPk(id);
-    return response.status(200).json(Lab);
+    const labs = await Lab.findByPk(id);
+    return response.status(200).json(labs);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -20,8 +20,8 @@ const getLab = async (request, response) => {
 
 const createLab = async (request, response) => {
   try {
-    const Lab = await Lab.create(request.body);
-    return response.status(200).json(Lab);
+    const labs = await Lab.create(request.body);
+    return response.status(200).json(labs);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -29,12 +29,12 @@ const createLab = async (request, response) => {
 
 const updateLab = async (request, response) => {
   try {
-    const Lab = Lab.update(request.body, {
+    const labs = Lab.update(request.body, {
       where: {
         id: request.params.id,
       },
     });
-    return response.status(200).json(Lab);
+    return response.status(200).json(labs);
   } catch (error) {
     return response.status(501).send(error);
   }

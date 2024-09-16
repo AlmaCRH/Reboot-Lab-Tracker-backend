@@ -2,8 +2,8 @@ const Pull_Request = require("../models/pull_request.model");
 
 const getAllPull_Requests = async (request, response) => {
   try {
-    const Pull_Requests = await Pull_Request.findAll();
-    return response.status(200).json(Pull_Requests);
+    const pull_Requests = await Pull_Request.findAll();
+    return response.status(200).json(pull_Requests);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -11,8 +11,8 @@ const getAllPull_Requests = async (request, response) => {
 
 const getPull_Request = async (request, response) => {
   try {
-    const Pull_Request = await Pull_Request.findByPk(id);
-    return response.status(200).json(Pull_Request);
+    const pull_Requests = await Pull_Request.findByPk(id);
+    return response.status(200).json(pull_Requests);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -20,8 +20,8 @@ const getPull_Request = async (request, response) => {
 
 const createPull_Request = async (request, response) => {
   try {
-    const Pull_Request = await Pull_Request.create(request.body);
-    return response.status(200).json(Pull_Request);
+    const pull_Requests = await Pull_Request.create(request.body);
+    return response.status(200).json(pull_Requests);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -29,12 +29,12 @@ const createPull_Request = async (request, response) => {
 
 const updatePull_Request = async (request, response) => {
   try {
-    const Pull_Request = Pull_Request.update(request.body, {
+    const pull_Requests = Pull_Request.update(request.body, {
       where: {
         id: request.params.id,
       },
     });
-    return response.status(200).json(Pull_Request);
+    return response.status(200).json(pull_Requests);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -42,7 +42,7 @@ const updatePull_Request = async (request, response) => {
 
 const deletePull_Request = async (request, response) => {
   try {
-    await Pull_Request.destroy({
+    await pull_Requests.destroy({
       where: {
         id: request.params.id,
       },

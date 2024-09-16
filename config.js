@@ -29,4 +29,4 @@ const startAPI = async () => {
   await initializeAndListen();
 };
 
-module.exports = { startAPI };
+startAPI();

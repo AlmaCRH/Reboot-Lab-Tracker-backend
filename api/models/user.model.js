@@ -13,7 +13,7 @@ const User = connection.define(
       type: DataTypes.ENUM("member", "owner"),
     },
   },
-  { timestamps: true }
+  { timestamps: false }
 );
 
 module.exports = User;
