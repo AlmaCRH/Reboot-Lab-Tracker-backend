@@ -1,4 +1,5 @@
 const Lab = require("../models/lab.model");
+const Pull_Request = require("../models/pull_request.model");
 
 const getAllLabs = async (request, response) => {
   try {
@@ -24,6 +25,18 @@ const createLab = async (request, response) => {
     return response.status(200).json(labs);
   } catch (error) {
     return response.status(501).send(error);
+  }
+};
+
+const createLabsAndPulls = async (req, res) => {
+  try {
+    const lab = await Lab.create({ title: req.body.lab });
+
+    const pulls = await Pull_Request.bulkCreate(req.body.pulls);
+    lab.addPulls(pulls);
+    return res.status(200).send("Pulls added to lab!");
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -59,6 +72,7 @@ module.exports = {
   getAllLabs,
   getLab,
   createLab,
+  createLabsAndPulls,
   updateLab,
   deleteLab,
 };

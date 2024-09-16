@@ -8,8 +8,14 @@ const addRelationsToModels = () => {
     User.hasMany(Pull_request);
     Pull_request.belongsTo(User);
 
-    Lab.hasMany(Pull_request);
-    Pull_request.belongsTo(Lab);
+    Lab.hasMany(Pull_request, {
+      foreignKey: "labId",
+      as: "pulls",
+    });
+    Pull_request.belongsTo(Lab, {
+      foreignKey: "labId",
+      as: "pulls",
+    });
 
     User.belongsToMany(Team, {
       through: "teams_users",

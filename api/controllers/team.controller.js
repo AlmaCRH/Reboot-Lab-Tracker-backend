@@ -1,80 +1,93 @@
 const Team = require("../models/team.model");
 const User = require("../models/user.model.js");
 
-const getAllTeams = async (request, response) => {
+const getAllTeams = async (req, res) => {
   try {
     const teams = await Team.findAll();
-    return response.status(200).json(teams);
+    return res.status(200).json(teams);
   } catch (error) {
-    return response.status(501).send(error);
+    return res.status(501).send(error);
   }
 };
 
-const getTeam = async (request, response) => {
+const getTeam = async (req, res) => {
   try {
     const teams = await Team.findByPk(id);
-    return response.status(200).json(teams);
+    return res.status(200).json(teams);
   } catch (error) {
-    return response.status(501).send(error);
+    return res.status(501).send(error);
   }
 };
 
-const createTeam = async (request, response) => {
+const getTeamAndUsers = async (req, res) => {
   try {
-    const teams = await Team.create(request.body);
-    return response.status(200).json(teams);
-  } catch (error) {
-    return response.status(501).send(error);
-  }
-};
-
-const createTeamAndUsers = async (request, response) => {
-  try {
-    console.log(request.body.team);
-    const membersArray = request.body.members.map((member) => {
-      return { username: member, role: "member" };
+    const team = await Team.findOne({
+      where: {
+        teamName: req.query.team,
+      },
+      include: User,
     });
-    const team = await Team.create({ teamName: request.body.team });
-
-    const members = await User.bulkCreate(membersArray);
-
-    await team.addUsers(members);
+    return res.status(200).json(team);
   } catch (error) {
     console.error(error);
   }
 };
 
-const updateTeam = async (request, response) => {
+const createTeam = async (req, res) => {
   try {
-    const teams = Team.update(request.body, {
-      where: {
-        id: request.params.id,
-      },
-    });
-    return response.status(200).json(teams);
+    const teams = await Team.create(req.body);
+    return res.status(200).json(teams);
   } catch (error) {
-    return response.status(501).send(error);
+    return res.status(501).send(error);
   }
 };
 
-const deleteTeam = async (request, response) => {
+const createTeamAndUsers = async (req, res) => {
+  try {
+    const membersArray = req.body.members.map((member) => {
+      return { username: member, role: "member" };
+    });
+    const team = await Team.create({ teamName: req.body.team });
+
+    const members = await User.bulkCreate(membersArray);
+
+    await team.addUsers(members);
+    return res.status(200).send("Members added to team");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const updateTeam = async (req, res) => {
+  try {
+    const teams = Team.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+    });
+    return res.status(200).json(teams);
+  } catch (error) {
+    return res.status(501).send(error);
+  }
+};
+
+const deleteTeam = async (req, res) => {
   try {
     await Team.destroy({
       where: {
-        id: request.params.id,
+        id: req.params.id,
       },
     });
-    return response
-      .status(200)
-      .send(`Team with id ${request.params.id} was deleted`);
+    return res.status(200).send(`Team with id ${req.params.id} was deleted`);
   } catch (error) {
-    return response.status(501).send(error);
+    return res.status(501).send(error);
   }
 };
 
 module.exports = {
   getAllTeams,
   getTeam,
+  getTeamAndUsers,
   createTeam,
   createTeamAndUsers,
   updateTeam,
