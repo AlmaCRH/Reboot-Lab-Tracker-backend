@@ -3,6 +3,7 @@ const router = require("express").Router();
 const {
   getAllLabs,
   getLab,
+  getLabAndPulls,
   createLab,
   createLabsAndPulls,
   updateLab,
@@ -10,6 +11,7 @@ const {
 } = require("../controllers/lab.controller");
 
 router.get("/", getAllLabs);
+router.get("/pulls", getLabAndPulls);
 router.get("/:id", getLab);
 router.post("/", createLab);
 router.post("/pulls", createLabsAndPulls);

@@ -21,15 +21,15 @@ const getTeam = async (req, res) => {
 
 const getTeamAndUsers = async (req, res) => {
   try {
-    const team = await Team.findOne({
+    const teamAndMembers = await Team.findOne({
       where: {
         teamName: req.query.team,
       },
       include: User,
     });
-    return res.status(200).json(team);
+    return res.status(200).json(teamAndMembers);
   } catch (error) {
-    console.error(error);
+    return response.status(501).send(error);
   }
 };
 
@@ -54,7 +54,7 @@ const createTeamAndUsers = async (req, res) => {
     await team.addUsers(members);
     return res.status(200).send("Members added to team");
   } catch (error) {
-    console.error(error);
+    return response.status(501).send(error);
   }
 };
 

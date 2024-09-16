@@ -19,6 +19,19 @@ const getLab = async (request, response) => {
   }
 };
 
+const getLabAndPulls = async (req, res) => {
+  try {
+    const labAndPulls = Lab.findOne({
+      where: {
+        title: req.query.labName,
+      },
+      include: Pull_Request,
+    });
+    return res.status(200).json(labAndPulls);
+  } catch (error) {
+    return response.status(501).send(error);
+  }
+};
 const createLab = async (request, response) => {
   try {
     const labs = await Lab.create(request.body);
@@ -36,7 +49,7 @@ const createLabsAndPulls = async (req, res) => {
     lab.addPulls(pulls);
     return res.status(200).send("Pulls added to lab!");
   } catch (error) {
-    console.error(error);
+    return response.status(501).send(error);
   }
 };
 
@@ -71,6 +84,7 @@ const deleteLab = async (request, response) => {
 module.exports = {
   getAllLabs,
   getLab,
+  getLabAndPulls,
   createLab,
   createLabsAndPulls,
   updateLab,
