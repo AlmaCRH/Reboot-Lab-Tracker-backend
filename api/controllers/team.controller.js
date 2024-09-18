@@ -1,3 +1,4 @@
+const Lab = require("../models/lab.model.js");
 const Team = require("../models/team.model");
 const User = require("../models/user.model.js");
 
@@ -52,9 +53,31 @@ const createTeamAndUsers = async (req, res) => {
     const members = await User.bulkCreate(membersArray);
 
     await team.addUsers(members);
+
     return res.status(200).send("Members added to team");
   } catch (error) {
-    return response.status(501).send(error);
+    return res.status(501).send(error);
+  }
+};
+
+const addLabToTeam = async (req, res) => {
+  try {
+    const team = await Team.findOne({
+      where: {
+        teamName: req.body.teamName,
+      },
+    });
+
+    const lab = await Lab.findOne({
+      where: {
+        title: req.body.labName,
+      },
+    });
+
+    team.addLab(lab);
+    res.status(200).send("Lab added to team!");
+  } catch (error) {
+    return res.status(501).send(error);
   }
 };
 
@@ -90,6 +113,7 @@ module.exports = {
   getTeamAndUsers,
   createTeam,
   createTeamAndUsers,
+  addLabToTeam,
   updateTeam,
   deleteTeam,
 };

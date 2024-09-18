@@ -6,6 +6,7 @@ const Lab = connection.define(
   {
     title: {
       type: DataTypes.STRING,
+      unique: true
     },
   },
   { timestamps: true }

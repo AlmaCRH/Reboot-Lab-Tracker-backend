@@ -1,4 +1,5 @@
 const Pull_Request = require("../models/pull_request.model");
+const User = require("../models/user.model");
 
 const getAllPull_Requests = async (request, response) => {
   try {
@@ -27,6 +28,16 @@ const createPull_Request = async (request, response) => {
   }
 };
 
+const addUserToPulls = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where
+    })
+  } catch(error){
+    res.status(501).send(error)
+  }
+} 
+
 const updatePull_Request = async (request, response) => {
   try {
     const pull_Requests = Pull_Request.update(request.body, {
@@ -42,7 +53,7 @@ const updatePull_Request = async (request, response) => {
 
 const deletePull_Request = async (request, response) => {
   try {
-    await pull_Requests.destroy({
+    await Pull_Request.destroy({
       where: {
         id: request.params.id,
       },

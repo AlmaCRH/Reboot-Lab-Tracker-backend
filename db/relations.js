@@ -34,6 +34,7 @@ const addRelationsToModels = () => {
       through: "teams_labs",
       timestamps: false,
     });
+
     console.log("Relations added to all models");
   } catch (error) {
     console.error(error);

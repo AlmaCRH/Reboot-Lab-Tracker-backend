@@ -6,6 +6,7 @@ const Team = connection.define(
   {
     teamName: {
       type: DataTypes.STRING,
+      unique: true,
     },
   },
   { timestamps: false }
