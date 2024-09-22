@@ -45,14 +45,20 @@ const createTeam = async (req, res) => {
 
 const createTeamAndUsers = async (req, res) => {
   try {
-    const membersArray = req.body.members.map((member) => {
-      return { username: member, role: "member" };
+    const membersCreated = await Promise.all(
+      req.body.members.map(async (member) => {
+        const [user] = await User.findOrCreate({
+          where: { username: member, role: "member" },
+        });
+        return user;
+      })
+    );
+
+    const [team] = await Team.findOrCreate({
+      where: { teamName: req.body.team },
     });
-    const team = await Team.create({ teamName: req.body.team });
 
-    const members = await User.bulkCreate(membersArray);
-
-    await team.addUsers(members);
+    await team.addUsers(membersCreated);
 
     return res.status(200).send("Members added to team");
   } catch (error) {
@@ -77,6 +83,7 @@ const addLabToTeam = async (req, res) => {
     team.addLab(lab);
     res.status(200).send("Lab added to team!");
   } catch (error) {
+    console.log(error.message);
     return res.status(501).send(error);
   }
 };

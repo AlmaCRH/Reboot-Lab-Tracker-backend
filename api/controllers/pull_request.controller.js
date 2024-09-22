@@ -30,13 +30,38 @@ const createPull_Request = async (request, response) => {
 
 const addUserToPulls = async (req, res) => {
   try {
+    const { pulls } = req.body;
+    const pullData = pulls.map((pull) => {
+      return { username: pull.githubUser, url: pull.repo_url };
+    });
+ 
+    const pullRequests = await Pull_Request.findAll({
+      where: {
+        repo_url: pullData.url,
+      },
+    });
+
     const users = await User.findAll({
-      where
-    })
-  } catch(error){
-    res.status(501).send(error)
+      where: {
+        username: pullData.username,
+      },
+    });
+
+    await Promise.all(
+      pullRequests.map(async (pull, index) => {
+        if (users) {
+          pull.userId = users[index].id;
+          await pull.save();
+        }
+      })
+    );
+
+    res.status(200).send("Users added to their corresponded pull!");
+  } catch (error) {
+    console.log(error.message);
+    res.status(501).send(error);
   }
-} 
+};
 
 const updatePull_Request = async (request, response) => {
   try {
@@ -71,5 +96,6 @@ module.exports = {
   getPull_Request,
   createPull_Request,
   updatePull_Request,
+  addUserToPulls,
   deletePull_Request,
 };
