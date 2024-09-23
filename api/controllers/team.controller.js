@@ -1,4 +1,5 @@
 const Lab = require("../models/lab.model.js");
+const Pull_Request = require("../models/pull_request.model.js");
 const Team = require("../models/team.model");
 const User = require("../models/user.model.js");
 
@@ -31,6 +32,31 @@ const getTeamAndUsers = async (req, res) => {
     return res.status(200).json(teamAndMembers);
   } catch (error) {
     return response.status(501).send(error);
+  }
+};
+
+const getTeamAndLab = async (req, res) => {
+  try {
+    const teamAndLabs = await Team.findOne({
+      where: {
+        teamName: req.query.team,
+      },
+      include: {
+        model: Lab,
+        where: {
+          title: req.query.title,
+        },
+      },
+    });
+
+    const pulls = await Pull_Request.findAll({
+      where: {
+        labId: teamAndLabs.labs[0].id,
+      },
+    });
+    return res.status(200).json(pulls);
+  } catch (error) {
+    return res.status(501).send(error);
   }
 };
 
@@ -83,7 +109,6 @@ const addLabToTeam = async (req, res) => {
     team.addLab(lab);
     res.status(200).send("Lab added to team!");
   } catch (error) {
-    console.log(error.message);
     return res.status(501).send(error);
   }
 };
@@ -118,6 +143,7 @@ module.exports = {
   getAllTeams,
   getTeam,
   getTeamAndUsers,
+  getTeamAndLab,
   createTeam,
   createTeamAndUsers,
   addLabToTeam,

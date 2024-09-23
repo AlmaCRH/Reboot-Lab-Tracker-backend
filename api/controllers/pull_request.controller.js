@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Pull_Request = require("../models/pull_request.model");
 const User = require("../models/user.model");
 
@@ -19,6 +20,19 @@ const getPull_Request = async (request, response) => {
   }
 };
 
+const getPullsByUsers = async (req, res) => {
+  try {
+    const pull_Requests = await Pull_Request.findAll({
+      where: {
+        userId: req.query.userId,
+      },
+    });
+    return res.status(200).json(pull_Requests);
+  } catch (error) {
+    return res.status(501).send(error);
+  }
+};
+
 const createPull_Request = async (request, response) => {
   try {
     const pull_Requests = await Pull_Request.create(request.body);
@@ -34,22 +48,30 @@ const addUserToPulls = async (req, res) => {
     const pullData = pulls.map((pull) => {
       return { username: pull.githubUser, url: pull.repo_url };
     });
- 
+
+    const urls = pullData.map((pull) => pull.url);
+    const usernames = pullData.map((pull) => pull.username);
+
     const pullRequests = await Pull_Request.findAll({
       where: {
-        repo_url: pullData.url,
+        repo_url: {
+          [Op.in]: urls,
+        },
       },
     });
+    console.log(urls);
 
     const users = await User.findAll({
       where: {
-        username: pullData.username,
+        username: {
+          [Op.in]: usernames,
+        },
       },
     });
-
     await Promise.all(
       pullRequests.map(async (pull, index) => {
         if (users) {
+          console.log(users[index].id);
           pull.userId = users[index].id;
           await pull.save();
         }
@@ -58,8 +80,7 @@ const addUserToPulls = async (req, res) => {
 
     res.status(200).send("Users added to their corresponded pull!");
   } catch (error) {
-    console.log(error.message);
-    res.status(501).send(error);
+    console.log(error);
   }
 };
 
@@ -94,6 +115,7 @@ const deletePull_Request = async (request, response) => {
 module.exports = {
   getAllPull_Requests,
   getPull_Request,
+  getPullsByUsers,
   createPull_Request,
   updatePull_Request,
   addUserToPulls,

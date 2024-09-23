@@ -1,3 +1,4 @@
+const Team = require("../models/team.model");
 const User = require("../models/user.model");
 
 const getAllUsers = async (request, response) => {
@@ -17,6 +18,7 @@ const getUser = async (request, response) => {
     return response.status(501).send(error);
   }
 };
+
 
 const createUser = async (request, response) => {
   try {

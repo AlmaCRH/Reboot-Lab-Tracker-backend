@@ -18,7 +18,7 @@ const checkConnection = async () => {
 
 const syncModels = async () => {
   try {
-    await connection.sync();
+    await connection.sync({ force: true });
   } catch (error) {
     console.error(error);
   }

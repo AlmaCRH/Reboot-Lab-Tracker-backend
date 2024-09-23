@@ -4,6 +4,7 @@ const {
   getAllTeams,
   getTeam,
   getTeamAndUsers,
+  getTeamAndLab,
   createTeam,
   createTeamAndUsers,
   addLabToTeam,
@@ -13,7 +14,7 @@ const {
 
 router.get("/", getAllTeams);
 router.get("/members", getTeamAndUsers);
-
+router.get("/labs", getTeamAndLab);
 router.get("/:id", getTeam);
 
 router.post("/", createTeam);
