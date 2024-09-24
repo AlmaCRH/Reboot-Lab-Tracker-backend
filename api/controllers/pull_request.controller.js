@@ -59,7 +59,6 @@ const addUserToPulls = async (req, res) => {
         },
       },
     });
-    console.log(urls);
 
     const users = await User.findAll({
       where: {
@@ -71,7 +70,6 @@ const addUserToPulls = async (req, res) => {
     await Promise.all(
       pullRequests.map(async (pull, index) => {
         if (users) {
-          console.log(users[index].id);
           pull.userId = users[index].id;
           await pull.save();
         }

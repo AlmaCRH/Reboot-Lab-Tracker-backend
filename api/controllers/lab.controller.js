@@ -51,18 +51,14 @@ const createLabsAndPulls = async (req, res) => {
     const [lab, labWasCreated] = await Lab.findOrCreate({
       where: { title: req.body.lab },
     });
-    for (let i = 0; i < req.body.pulls.length; i++) {
-      const [pullCreated, pullWasCreated] = await Pull_Request.findOrCreate({
-        where: { repo_url: req.body.pulls[i].repo_url },
-        defaults: req.body.pulls[i],
+    const pullsCreated = Pull_Request.bulkCreate(req.body.pulls);
+    for (let i = 0; i < pullsCreated.length; i++) {
+      const pulls = await Pull_Request.update({labId: lab.dataValues.id}, {
+        where: {
+          repo_url: pullsCreated[i],
+        },
       });
-      console.log(pullCreated);
-
-      if (pullCreated) {
-        console.log("AAAAAAAAAAAAAAA");
-        lab.addPull(pullCreated);
-        return res.status(200).send("Pulls added to lab!");
-      }
+      console.log(pulls)
     }
     return res.status(200).send("Pulls added to lab!");
   } catch (error) {
