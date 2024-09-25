@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const Pull_Request = require("../models/pull_request.model");
 const User = require("../models/user.model");
+const Lab = require("../models/lab.model");
 
 const getAllPull_Requests = async (request, response) => {
   try {
@@ -20,19 +21,6 @@ const getPull_Request = async (request, response) => {
   }
 };
 
-const getPullsByUsers = async (req, res) => {
-  try {
-    const pull_Requests = await Pull_Request.findAll({
-      where: {
-        userId: req.query.userId,
-      },
-    });
-    return res.status(200).json(pull_Requests);
-  } catch (error) {
-    return res.status(501).send(error);
-  }
-};
-
 const createPull_Request = async (request, response) => {
   try {
     const pull_Requests = await Pull_Request.create(request.body);
@@ -42,43 +30,32 @@ const createPull_Request = async (request, response) => {
   }
 };
 
-const addUserToPulls = async (req, res) => {
+const createPullsWithUsersAndLab = async (req, res) => {
   try {
-    const { pulls } = req.body;
-    const pullData = pulls.map((pull) => {
-      return { username: pull.githubUser, url: pull.repo_url };
-    });
-
-    const urls = pullData.map((pull) => pull.url);
-    const usernames = pullData.map((pull) => pull.username);
-
-    const pullRequests = await Pull_Request.findAll({
+    const pullsData = req.body.pullsData;
+    const lab = await Lab.findOne({
       where: {
-        repo_url: {
-          [Op.in]: urls,
-        },
+        title: req.body.lab,
       },
     });
-
-    const users = await User.findAll({
-      where: {
-        username: {
-          [Op.in]: usernames,
+    for (let pullData of pullsData) {
+      const user = await User.findOne({
+        where: {
+          username: pullData.githubUser,
         },
-      },
-    });
-    await Promise.all(
-      pullRequests.map(async (pull, index) => {
-        if (users) {
-          pull.userId = users[index].id;
-          await pull.save();
-        }
-      })
-    );
+      });
 
-    res.status(200).send("Users added to their corresponded pull!");
+      if (user?.username === pullData?.githubUser) {
+        const pull = await Pull_Request.create(pullData);
+        pull.setUser(user);
+        pull.setLab(lab);
+        pull.save;
+      }
+    }
+    return res.status(200).send("All pulls created");
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
+    res.status(501).send(error);
   }
 };
 
@@ -113,9 +90,8 @@ const deletePull_Request = async (request, response) => {
 module.exports = {
   getAllPull_Requests,
   getPull_Request,
-  getPullsByUsers,
   createPull_Request,
   updatePull_Request,
-  addUserToPulls,
+  createPullsWithUsersAndLab,
   deletePull_Request,
 };

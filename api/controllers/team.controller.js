@@ -21,17 +21,33 @@ const getTeam = async (req, res) => {
   }
 };
 
-const getTeamAndUsers = async (req, res) => {
+const getUsersWithTeamsAndPullsByLab = async (req, res) => {
   try {
-    const teamAndMembers = await Team.findOne({
+    const { teamName, labName } = req.query;
+
+    const team = await Team.findOne({
       where: {
-        teamName: req.query.team,
+        teamName: teamName,
       },
-      include: User,
+      includes: [
+        {
+          model: User,
+          through: { attributes: [] },
+        },
+        {
+          model: Pull_Request,
+          includes: [
+            {
+              model: Lab,
+              where: { title: labName },
+            },
+          ],
+        },
+      ],
     });
-    return res.status(200).json(teamAndMembers);
+    console.log(team);
   } catch (error) {
-    return response.status(501).send(error);
+    res.status(501).send(error);
   }
 };
 
@@ -100,7 +116,7 @@ const addLabToTeam = async (req, res) => {
       },
     });
 
-    const lab = await Lab.findOne({
+    const [lab, labWasCreated] = await Lab.findOrCreate({
       where: {
         title: req.body.labName,
       },
@@ -142,7 +158,7 @@ const deleteTeam = async (req, res) => {
 module.exports = {
   getAllTeams,
   getTeam,
-  getTeamAndUsers,
+  getUsersWithTeamsAndPullsByLab,
   getTeamAndLab,
   createTeam,
   createTeamAndUsers,

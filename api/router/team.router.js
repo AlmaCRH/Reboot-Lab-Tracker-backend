@@ -3,7 +3,7 @@ const router = require("express").Router();
 const {
   getAllTeams,
   getTeam,
-  getTeamAndUsers,
+  getUsersWithTeamsAndPullsByLab,
   getTeamAndLab,
   createTeam,
   createTeamAndUsers,
@@ -13,7 +13,7 @@ const {
 } = require("../controllers/team.controller");
 
 router.get("/", getAllTeams);
-router.get("/members", getTeamAndUsers);
+router.get("/members", getUsersWithTeamsAndPullsByLab);
 router.get("/labs", getTeamAndLab);
 router.get("/:id", getTeam);
 

@@ -10,11 +10,9 @@ const addRelationsToModels = () => {
 
     Lab.hasMany(Pull_request, {
       foreignKey: "labId",
-      as: "pulls",
     });
     Pull_request.belongsTo(Lab, {
       foreignKey: "labId",
-      as: "pulls",
     });
 
     User.belongsToMany(Team, {

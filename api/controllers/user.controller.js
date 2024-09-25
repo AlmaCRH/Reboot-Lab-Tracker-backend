@@ -1,3 +1,5 @@
+const Lab = require("../models/lab.model");
+const Pull_Request = require("../models/pull_request.model");
 const Team = require("../models/team.model");
 const User = require("../models/user.model");
 
@@ -18,7 +20,6 @@ const getUser = async (request, response) => {
     return response.status(501).send(error);
   }
 };
-
 
 const createUser = async (request, response) => {
   try {
