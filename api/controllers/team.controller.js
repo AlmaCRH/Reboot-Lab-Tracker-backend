@@ -1,5 +1,5 @@
 const Lab = require("../models/lab.model.js");
-const Pull_Request = require("../models/pull_request.model.js");
+const PullRequest = require("../models/pullRequest.model.js");
 const Team = require("../models/team.model");
 const User = require("../models/user.model.js");
 
@@ -29,25 +29,33 @@ const getUsersWithTeamsAndPullsByLab = async (req, res) => {
       where: {
         teamName: teamName,
       },
-      includes: [
+      include: [
         {
           model: User,
-          through: { attributes: [] },
-        },
-        {
-          model: Pull_Request,
-          includes: [
+          through: {
+            attributes: [],
+          },
+          include: [
             {
-              model: Lab,
-              where: { title: labName },
+              model: PullRequest,
+              include: [
+                {
+                  model: Lab,
+                  where: { title: labName },
+                },
+              ],
             },
           ],
         },
       ],
     });
-    res.status(200).send(team);
+    if (team) {
+      res.status(200).json(team);
+    } else {
+      res.status(404).send(undefined);
+    }
   } catch (error) {
-    res.status(501).send(error);
+    res.status(500).send(error.message);
   }
 };
 
@@ -65,7 +73,7 @@ const getTeamAndLab = async (req, res) => {
       },
     });
 
-    const pulls = await Pull_Request.findAll({
+    const pulls = await PullRequest.findAll({
       where: {
         labId: teamAndLabs.labs[0].id,
       },
@@ -87,22 +95,24 @@ const createTeam = async (req, res) => {
 
 const createTeamAndUsers = async (req, res) => {
   try {
-    const membersCreated = await Promise.all(
-      req.body.members.map(async (member) => {
-        const [user] = await User.findOrCreate({
-          where: { username: member, role: "member" },
-        });
-        return user;
-      })
-    );
-
-    const [team] = await Team.findOrCreate({
+    let team = await Team.findOne({
       where: { teamName: req.body.team },
     });
+    if (!team) team = await Team.create({ teamName: req.body.team });
+    for (const memberData of req.body.members) {
+      let member = await User.findOne({
+        where: { username: memberData, role: "member" },
+      });
 
-    await team.addUsers(membersCreated);
-
-    return res.status(200).send("Members added to team");
+      if (!member) {
+        member = await User.create({
+          username: memberData,
+          role: "member",
+        });
+      }
+      await team.addUsers(member);
+    }
+    return res.status(200).send("Team created");
   } catch (error) {
     return res.status(501).send(error);
   }
@@ -110,20 +120,23 @@ const createTeamAndUsers = async (req, res) => {
 
 const addLabToTeam = async (req, res) => {
   try {
-    const team = await Team.findOne({
+    let team = await Team.findOne({
       where: {
         teamName: req.body.teamName,
       },
     });
 
-    const [lab, labWasCreated] = await Lab.findOrCreate({
-      where: {
-        title: req.body.labName,
-      },
-    });
+    if (!team) team = await Team.create({ teamName: req.body.teamName });
 
-    team.addLab(lab);
-    res.status(200).send("Lab added to team!");
+    let lab = await Lab.findOne({
+      where: { title: req.body.labName },
+    });
+    if (!lab) lab = await Lab.create({ title: req.body.labName });
+
+    if (team && lab) {
+      await team.addLab(lab);
+      return res.status(200).send("Lab added to team");
+    }
   } catch (error) {
     return res.status(501).send(error);
   }

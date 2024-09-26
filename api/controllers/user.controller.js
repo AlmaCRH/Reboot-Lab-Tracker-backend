@@ -1,5 +1,5 @@
 const Lab = require("../models/lab.model");
-const Pull_Request = require("../models/pull_request.model");
+const PullRequest = require("../models/pullRequest.model");
 const Team = require("../models/team.model");
 const User = require("../models/user.model");
 

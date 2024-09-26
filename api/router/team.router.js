@@ -20,6 +20,7 @@ router.get("/:id", getTeam);
 router.post("/", createTeam);
 router.post("/members", createTeamAndUsers);
 router.post("/labs", addLabToTeam);
+
 router.put("/:id", updateTeam);
 router.delete("/:id", deleteTeam);
 

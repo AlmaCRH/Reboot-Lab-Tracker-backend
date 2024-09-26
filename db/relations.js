@@ -1,17 +1,17 @@
 const Lab = require("../api/models/lab.model");
 const User = require("../api/models/user.model");
 const Team = require("../api/models/team.model");
-const Pull_request = require("../api/models/pull_request.model");
+const PullRequest = require("../api/models/pullRequest.model");
 
 const addRelationsToModels = () => {
   try {
-    User.hasMany(Pull_request);
-    Pull_request.belongsTo(User);
+    User.hasMany(PullRequest);
+    PullRequest.belongsTo(User);
 
-    Lab.hasMany(Pull_request, {
+    Lab.hasMany(PullRequest, {
       foreignKey: "labId",
     });
-    Pull_request.belongsTo(Lab, {
+    PullRequest.belongsTo(Lab, {
       foreignKey: "labId",
     });
 

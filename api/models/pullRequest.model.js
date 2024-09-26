@@ -1,8 +1,8 @@
-const { connection } = require("../../db/");
+const { connection } = require("../../db");
 const { DataTypes, DATE } = require("sequelize");
 
-const Pull_Request = connection.define(
-  "pull_request",
+const PullRequest = connection.define(
+  "pullRequest",
   {
     githubUser: {
       type: DataTypes.STRING,
@@ -27,4 +27,4 @@ const Pull_Request = connection.define(
   { timestamps: false }
 );
 
-module.exports = Pull_Request;
+module.exports = PullRequest;

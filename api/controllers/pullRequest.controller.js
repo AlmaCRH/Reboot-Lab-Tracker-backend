@@ -1,30 +1,30 @@
 const { Op } = require("sequelize");
-const Pull_Request = require("../models/pull_request.model");
+const PullRequest = require("../models/pullRequest.model");
 const User = require("../models/user.model");
 const Lab = require("../models/lab.model");
 
-const getAllPull_Requests = async (request, response) => {
+const getAllPullRequests = async (request, response) => {
   try {
-    const pull_Requests = await Pull_Request.findAll();
-    return response.status(200).json(pull_Requests);
+    const pullRequests = await PullRequest.findAll();
+    return response.status(200).json(pullRequests);
   } catch (error) {
     return response.status(501).send(error);
   }
 };
 
-const getPull_Request = async (request, response) => {
+const getPullRequest = async (request, response) => {
   try {
-    const pull_Requests = await Pull_Request.findByPk(id);
-    return response.status(200).json(pull_Requests);
+    const pullRequests = await PullRequest.findByPk(id);
+    return response.status(200).json(pullRequests);
   } catch (error) {
     return response.status(501).send(error);
   }
 };
 
-const createPull_Request = async (request, response) => {
+const createPullRequest = async (request, response) => {
   try {
-    const pull_Requests = await Pull_Request.create(request.body);
-    return response.status(200).json(pull_Requests);
+    const pullRequests = await PullRequest.create(request.body);
+    return response.status(200).json(pullRequests);
   } catch (error) {
     return response.status(501).send(error);
   }
@@ -44,9 +44,12 @@ const createPullsWithUsersAndLab = async (req, res) => {
           username: pullData.githubUser,
         },
       });
+      const pullExist = await PullRequest.findOne({
+        where: { repo_url: pullData.repo_url },
+      });
 
-      if (user?.username === pullData?.githubUser) {
-        const pull = await Pull_Request.create(pullData);
+      if (!pullExist && user?.username === pullData?.githubUser) {
+        const pull = await PullRequest.create(pullData);
         pull.setUser(user);
         pull.setLab(lab);
         pull.save;
@@ -54,44 +57,43 @@ const createPullsWithUsersAndLab = async (req, res) => {
     }
     return res.status(200).send("All pulls created");
   } catch (error) {
-    console.log(error.message);
     res.status(501).send(error);
   }
 };
 
-const updatePull_Request = async (request, response) => {
+const updatePullRequest = async (request, response) => {
   try {
-    const pull_Requests = Pull_Request.update(request.body, {
+    const pullRequests = PullRequest.update(request.body, {
       where: {
         id: request.params.id,
       },
     });
-    return response.status(200).json(pull_Requests);
+    return response.status(200).json(pullRequests);
   } catch (error) {
     return response.status(501).send(error);
   }
 };
 
-const deletePull_Request = async (request, response) => {
+const deletePullRequest = async (request, response) => {
   try {
-    await Pull_Request.destroy({
+    await PullRequest.destroy({
       where: {
         id: request.params.id,
       },
     });
     return response
       .status(200)
-      .send(`Pull_Request with id ${request.params.id} was deleted`);
+      .send(`Pull request with id ${request.params.id} was deleted`);
   } catch (error) {
     return response.status(501).send(error);
   }
 };
 
 module.exports = {
-  getAllPull_Requests,
-  getPull_Request,
-  createPull_Request,
-  updatePull_Request,
+  getAllPullRequests,
+  getPullRequest,
+  createPullRequest,
+  updatePullRequest,
   createPullsWithUsersAndLab,
-  deletePull_Request,
+  deletePullRequest,
 };

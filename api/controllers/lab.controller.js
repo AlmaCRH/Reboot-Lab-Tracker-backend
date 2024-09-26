@@ -1,5 +1,5 @@
 const Lab = require("../models/lab.model");
-const Pull_Request = require("../models/pull_request.model");
+const PullRequest = require("../models/pullRequest.model");
 const User = require("../models/user.model");
 
 const getAllLabs = async (req, res) => {
@@ -27,7 +27,7 @@ const getLabAndPulls = async (req, res) => {
         title: req.query.labName,
       },
       include: {
-        model: Pull_Request,
+        model: PullRequest,
         as: "pulls",
       },
     });
@@ -51,14 +51,17 @@ const createLabsAndPulls = async (req, res) => {
     const [lab, labWasCreated] = await Lab.findOrCreate({
       where: { title: req.body.lab },
     });
-    const pullsCreated = Pull_Request.bulkCreate(req.body.pulls);
+    const pullsCreated = PullRequest.bulkCreate(req.body.pulls);
     for (let i = 0; i < pullsCreated.length; i++) {
-      const pulls = await Pull_Request.update({labId: lab.dataValues.id}, {
-        where: {
-          repo_url: pullsCreated[i],
-        },
-      });
-      console.log(pulls)
+      const pulls = await PullRequest.update(
+        { labId: lab.dataValues.id },
+        {
+          where: {
+            repo_url: pullsCreated[i],
+          },
+        }
+      );
+      console.log(pulls);
     }
     return res.status(200).send("Pulls added to lab!");
   } catch (error) {
