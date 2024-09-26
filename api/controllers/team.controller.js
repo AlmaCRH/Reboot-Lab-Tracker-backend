@@ -45,7 +45,7 @@ const getUsersWithTeamsAndPullsByLab = async (req, res) => {
         },
       ],
     });
-    console.log(team);
+    res.status(200).send(team);
   } catch (error) {
     res.status(501).send(error);
   }
