@@ -53,7 +53,7 @@ const createLabsAndPulls = async (req, res) => {
     });
     const pullsCreated = PullRequest.bulkCreate(req.body.pulls);
     for (let i = 0; i < pullsCreated.length; i++) {
-      const pulls = await PullRequest.update(
+      await PullRequest.update(
         { labId: lab.dataValues.id },
         {
           where: {
@@ -61,7 +61,6 @@ const createLabsAndPulls = async (req, res) => {
           },
         }
       );
-      console.log(pulls);
     }
     return res.status(200).send("Pulls added to lab!");
   } catch (error) {
