@@ -1,11 +1,17 @@
+require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
-const connection = new Sequelize("labTracker", "alma", "reboot", {
-  host: "localhost",
-  dialect: "mysql",
-  port: 3306,
-  logging: false,
-});
+const connection = new Sequelize(
+  process.env.DATABASE_NAME,
+  process.env.DATABASE_USER,
+  process.env.DATABASE_PASSWORD,
+  {
+    host: "localhost",
+    dialect: "mysql",
+    port: process.env.DATABASE_PORT,
+    logging: false,
+  }
+);
 
 const checkConnection = async () => {
   try {
